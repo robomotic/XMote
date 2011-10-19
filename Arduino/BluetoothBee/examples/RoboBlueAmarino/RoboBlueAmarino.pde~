@@ -1,4 +1,9 @@
-
+/*
+  Receives Test Events from your phone.
+  After it gets a test message the led 13 will blink
+  for one second.
+*/
+ 
 /*
   RoboBlueAmarino.h - Test code for Amarino
   Copyright (c) 2011 Robomotic ltd.  All right reserved.

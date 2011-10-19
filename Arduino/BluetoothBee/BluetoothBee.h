@@ -1,5 +1,5 @@
 /*
-  BluetoothBee.h - Arduino Library for Amarino
+  BluetoothBee.h - Arduino Library for the BluetoothBee
   Copyright (c) 2011 Robomotic ltd.  All right reserved.
   
   This library is free software; you can redistribute it and/or
@@ -89,7 +89,9 @@ public:
 	bool waitForConnection();
 	bool receiveLoop();
 	bool isConnected;
-	
+	void CheckOK();
+	bool setAutoConnect(bool);
+	bool setPermitPaired(bool);
 	uint16_t waitTime;
 	
 	static int library_version() { 

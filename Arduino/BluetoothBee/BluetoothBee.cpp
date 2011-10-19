@@ -1,5 +1,5 @@
 /*
-  BluetoothBee.cpp - Arduino Library for Amarino
+  BluetoothBee.cpp - Arduino Library for the BluetoothBee
   Copyright (c) 2009 Bonifaz Kaufmann.  All right reserved.
 
   This library is free software; you can redistribute it and/or
@@ -54,12 +54,14 @@ BluetoothBee::BluetoothBee()
 bool BluetoothBee::setSlave()
 {
   Serial.print("\r\n+STWMOD=0\r\n");  
+  CheckOK(); 
 }
 	
 	
 bool BluetoothBee::setMaster()
 {
   Serial.print("\r\n+STWMOD=1\r\n");  
+  CheckOK(); 
 }
 	
 bool BluetoothBee::setPin(char pin[])
@@ -71,6 +73,7 @@ bool BluetoothBee::setPin(char pin[])
 		Serial.print(pin[a]);  
 	}
 	Serial.print("\r\n");  
+	CheckOK(); 
 }
 
 bool BluetoothBee::setName(char name[])
@@ -83,6 +86,27 @@ bool BluetoothBee::setName(char name[])
 		Serial.print(name[a]);  
 	}
 	Serial.print("\r\n");  
+	CheckOK(); 
+  
+}
+
+bool BluetoothBee::setAutoConnect(bool flag)
+{
+	//permit save and rest
+	if(flag) Serial.print("\r\n+STAUTO=1\r\n"); 
+	//forbidden save and rest
+	else Serial.print("\r\n+STAUTO=0\r\n"); 
+	CheckOK(); 
+  
+}
+
+bool BluetoothBee::setPermitPaired(bool flag)
+{
+	//permit device to connect me
+	if(flag) Serial.print("\r\n+STOAUT=1\r\n"); 
+	//forbidden
+	else Serial.print("\r\n+STOAUT=0\r\n"); 
+	CheckOK(); 
   
 }
 
@@ -106,8 +130,36 @@ if (strncmp(buffer, "OK",2)  == 0)
 
 bool BluetoothBee::waitForConnection()
 {
-    receiveLoop();
+    return receiveLoop();
  
+}
+
+//Checks if the response "OK" is received
+void BluetoothBee::CheckOK()
+{
+  char a,b;
+  while(1)
+  {
+    if(Serial.available())
+    {
+
+    a = Serial.read();
+
+    if(a=='O')
+    {
+      // Wait for next character K. available() is required in some cases, as K is not immediately available.
+      while( (b = Serial.read()) != -1)
+      {
+        if(b=='K')
+        {
+        break;
+        }
+      }
+      break;
+    }
+   }
+  }
+
 }
 
 bool BluetoothBee::receive(){
@@ -135,7 +187,8 @@ bool BluetoothBee::receive(){
 			}
 			if(count_cr+count_lf>=4)
 			{
-			  wait_cmd=true;
+			  wait_cmd=false;
+			  return true;
 			  break;
 			}
 		}
@@ -146,7 +199,6 @@ bool BluetoothBee::receive(){
 		else return false;
 	}
 	}
-	return true;
 
 }
 
@@ -345,4 +397,5 @@ void BluetoothBee::flush(){
 	}
 	bufferCount = 0;
 	numberOfValues = 0;
+	Serial.flush();
 }
